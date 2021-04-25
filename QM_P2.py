@@ -3,14 +3,24 @@ Autor:  Rubí E. Ramírez Milián
 Compliador:
 Para compilar: python QM_P2.py
 Fecha:  Sat Apr 23 17:38:09 CST 2021
-Librerías: math, sympy.combinatorics.permutations, itertools
+Librerías: math, sympy.combinatorics.permutations, itertools, numpy
 Entradas, Salidas, Resumen: Se hará un programa para calcular conmutadores. Matrices
 '''
 
 from math import sqrt
+import sympy
 from sympy.combinatorics.permutations import Permutation
 from itertools import permutations
+import numpy as np
+import scipy.sparse as sp
+import scipy.sparse.linalg  
+import scipy.linalg as la
 
+'''
+A= sympy.Matrix(sigma2x)
+
+print(A.eigenvals())
+'''
 paulix=[[0,1],[1,0]]
 pauliy=[[0,-1j],[1j,0]]
 pauliz=[[1,0], [0,-1]]
@@ -62,7 +72,7 @@ def matrix_product(A, B):
 
 #FUNCION 3 ###################################################################
 def matrix_sum(A, B):
-#Implementacion del producto matricial
+#Implementacion de  la suma de matrices
     filas2 = len(B)
     filas1 = len(A)
     columnas1 = len(A[0])
@@ -91,13 +101,28 @@ def conmutador(A, B):
 
 #FUNCION 5 ###################################################################
 def fancy_print(A):
-#Implementacion del producto matricial
+#Imprime matrices de forma ordenada
     filas1 = len(A)
     columnas1 = len(A[0])
     for fila in A:
         for valor in fila:
-            print("\t", valor, end=" ")
+            print("\t", valor, end="  ")
         print()
+
+#FUNCION 6 ###################################################################
+def scalar_product(n, A):
+#Implementacion de producto de una matriz por un escalar
+    filas1 = len(A)
+    columnas1 = len(A[0])
+    E=[[0 for column in range(columnas1)] for row in range(filas1)]
+    
+    for i in range(filas1):
+        for j in range(columnas1):
+                E[i][j]=n*A[i][j]
+    return E
+
+
+
 
 #Definimos las matrices sigma_n^{\alpha} con la función de Kronecker:
 
@@ -123,7 +148,7 @@ sigma2x_sigma3x=matrix_product(sigma2x,sigma3x)
 sigma2y_sigma3y=matrix_product(sigma2y,sigma3y)
 
 #La suma de las matrices anteriores conforman la parte del hamiltoniano que nos interesa
-H=matrix_sum(matrix_sum(sigma1x_sigma2x,sigma1y_sigma2y), matrix_sum(sigma2x_sigma3x,sigma2y_sigma3y) )
+H=matrix_sum(matrix_sum(sigma1x_sigma2x,sigma1y_sigma2y), matrix_sum(sigma2x_sigma3x,sigma2y_sigma3y))
 
 #Ahora conmutamos H con sigma_n^{alpha}
 H_1=conmutador(H,sigma1z)
@@ -131,4 +156,92 @@ H_2=conmutador(H, sigma2z)
 H_3=conmutador(H,sigma3z)
 
 #La matriz resultante es cero como se quería probar.
-fancy_print(matrix_sum(matrix_sum(H_1,H_2),H_3))
+#fancy_print(matrix_sum(matrix_sum(H_1,H_2),H_3))
+
+#FIN DEL PROBLEMA 2#######################################################################################################
+
+#Para el producto tensorial de dos estados definimos los autovectores de pauliz
+up=[[1],[0]]
+down=[[0],[-1]]
+
+#Definimos los valores de los cuatro estados 
+up_up= kronecker(up, up)
+up_down = kronecker(up,down)
+down_up = kronecker(down, up)
+down_down= kronecker(down, down)
+
+
+#matrices de un espacio de cuatro dimensiones
+SIGMA1X=kronecker(paulix,identidad)
+SIGMA2X=kronecker(identidad,paulix)
+SIGMA1Y=kronecker(pauliy, identidad)
+SIGMA2Y=kronecker(identidad,pauliy)
+
+#Definamos ahora los operadores escalera
+
+sigma1_mas=scalar_product(0.5,matrix_sum(SIGMA1X,scalar_product(1j,SIGMA1Y)))
+sigma2_mas=scalar_product(0.5,matrix_sum(SIGMA2X,scalar_product(1j,SIGMA2Y)))
+sigma1_menos=scalar_product(0.5,matrix_sum(SIGMA1X,scalar_product(-1j,SIGMA1Y)))
+sigma2_menos=scalar_product(0.5,matrix_sum(SIGMA2X,scalar_product(-1j,SIGMA2Y)))
+
+#Definimos h_{n, n+1}
+h_1_2=matrix_sum(matrix_product(sigma1_mas,sigma2_menos),matrix_product(sigma2_mas, sigma1_menos))
+
+#Imprimimos el resultado decalcular el operador h en cada uno de los cuatro estados
+'''
+print('Primer Estado')
+fancy_print(matrix_product(h_1_2,up_up))
+
+print('Segundo Estado')
+fancy_print(matrix_product(h_1_2,up_down))
+
+
+print('Tercer Estado')
+fancy_print(matrix_product(h_1_2,down_up))
+
+
+print('Cuarto Estado')
+fancy_print(matrix_product(h_1_2,down_down))
+'''
+#Definir los estados entrelazados en un espacio de 8 dimensiones
+up_up_up=kronecker(up_up,up)
+up_up_down=kronecker(up_up,down)
+up_down_up=kronecker(up_down,up)
+down_up_up=kronecker(down_up,up)
+up_down_down=kronecker(up_down,down)
+down_down_up=kronecker(down_down,up)
+down_up_down=kronecker(down_up,down)
+down_down_down=kronecker(down_down,down)
+'''
+
+#Aplicamos el hamiltoniano a los estados.
+print('primero')
+fancy_print(matrix_product(H,up_up_up))
+print('segundo')
+fancy_print(matrix_product(H,up_up_down))
+print('tercero')
+fancy_print(matrix_product(H,up_down_up))
+print('cuarto')
+fancy_print(matrix_product(H,down_up_up))
+print('quinto')
+fancy_print(matrix_product(H,up_down_down))
+print('sexto')
+fancy_print(matrix_product(H,down_up_down))
+print('septimo')
+fancy_print(matrix_product(H,down_down_up))
+print('octavo')
+fancy_print(matrix_product(H,down_down_down))
+'''
+##FIN PROBLEMA 4 #######################################################################################
+
+
+
+
+
+
+# Eigenvalores con numpy
+A = np.array(H)
+# x Eigenvalor, v Eigenvector
+x, v = np.linalg.eig(A)
+print(x)
+fancy_print(v)
