@@ -151,7 +151,7 @@ sigma2y_sigma3y=matrix_product(sigma2y,sigma3y)
 #La suma de las matrices anteriores conforman la parte del hamiltoniano que nos interesa
 H=matrix_sum(matrix_sum(sigma1x_sigma2x,sigma1y_sigma2y), matrix_sum(sigma2x_sigma3x,sigma2y_sigma3y))
 
-#Ahora conmutamos H con sigma_n^{alpha}
+#Ahora conmutamos H con sigma_n^{z}
 H_1=conmutador(H,sigma1z)
 H_2=conmutador(H, sigma2z)
 H_3=conmutador(H,sigma3z)
