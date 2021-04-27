@@ -3,18 +3,11 @@ Autor:  Rubí E. Ramírez Milián
 Compliador:
 Para compilar: python QM_P2.py
 Fecha:  Sat Apr 23 17:38:09 CST 2021
-Librerías: math, sympy.combinatorics.permutations, itertools, numpy
+Librerías: 
 Entradas, Salidas, Resumen: Se hará un programa para calcular conmutadores. Matrices
 '''
 
-from math import sqrt
-from sympy.matrices import Matrix
-from sympy.combinatorics.permutations import Permutation
-from itertools import permutations
-import numpy as np
-import scipy.sparse as sp
-import scipy.sparse.linalg  
-import scipy.linalg as la
+
 
 '''
 A= sympy.Matrix(sigma2x)
