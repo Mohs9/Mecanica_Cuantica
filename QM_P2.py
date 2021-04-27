@@ -161,7 +161,30 @@ fancy_print(matrix_sum(matrix_sum(H_1,H_2),H_3))
 
 #FIN DEL PROBLEMA 2#######################################################################################################
 
+#################################PROBLEMA 3 ##############################################################################
 
+#Definimos los operadores escalera para 8 dimensiones
+
+sigma1_mas=scalar_product(0.5,matrix_sum(sigma1x,scalar_product(1j,sigma1y)))
+sigma2_mas=scalar_product(0.5,matrix_sum(sigma2x,scalar_product(1j,sigma2y)))
+sigma1_menos=scalar_product(0.5,matrix_sum(sigma1x,scalar_product(-1j,sigma1y)))
+sigma2_menos=scalar_product(0.5,matrix_sum(sigma2x,scalar_product(-1j,sigma2y)))
+sigma3_mas=scalar_product(0.5,matrix_sum(sigma3x,scalar_product(1j,sigma3y)))
+sigma3_menos=scalar_product(0.5,matrix_sum(sigma3x,scalar_product(-1j,sigma3y)))
+
+if matrix_product(sigma1_menos, sigma2_mas)==matrix_product(sigma2_mas, sigma1_menos):
+    print(True)
+else: 
+    print(False)
+
+if matrix_product(sigma2_menos, sigma3_mas)==matrix_product(sigma3_mas, sigma2_menos):
+    print(True)
+else: 
+    print(False)
+
+
+
+########## FIN PROBLEMA 3####################################################################################################
 
 #######################  PROBLEMA 4 #########################################################################
 
@@ -191,23 +214,40 @@ SIGMA1_menos=scalar_product(0.5,matrix_sum(SIGMA1X,scalar_product(-1j,SIGMA1Y)))
 SIGMA2_menos=scalar_product(0.5,matrix_sum(SIGMA2X,scalar_product(-1j,SIGMA2Y)))
 
 #Definimos h_{n, n+1}
-h_1_2=matrix_sum(matrix_product(SIGMA1_mas,SIGMA2_menos),matrix_product(SIGMA2_mas, SIGMA1_menos))
+H_1_2=matrix_sum(matrix_product(SIGMA1_mas,SIGMA2_menos),matrix_product(SIGMA2_mas, SIGMA1_menos))
+
+
+#Definimos h_{n, n+1}
+h_1_2=matrix_sum(matrix_product(sigma1_mas,sigma2_menos),matrix_product(sigma2_mas, sigma1_menos))
+h_2_3=matrix_sum(matrix_product(sigma2_mas,sigma3_menos),matrix_product(sigma2_menos, sigma3_mas))
+
+
+#Comprobamos que 2(h_1_2+h_2_3) sea igual al Hamiltoniano
+if scalar_product(2,matrix_sum(h_1_2,h_2_3))==H:
+    print(True)
+else:
+    print(False)
+
+
+
+
+
 
 #Imprimimos el resultado decalcular el operador h en cada uno de los cuatro estados
 
 print('Primer Estado')
-fancy_print(matrix_product(h_1_2,up_up))
+fancy_print(matrix_product(H_1_2,up_up))
 
 print('Segundo Estado')
-fancy_print(matrix_product(h_1_2,up_down))
+fancy_print(matrix_product(H_1_2,up_down))
 
 
 print('Tercer Estado')
-fancy_print(matrix_product(h_1_2,down_up))
+fancy_print(matrix_product(H_1_2,down_up))
 
 
 print('Cuarto Estado')
-fancy_print(matrix_product(h_1_2,down_down))
+fancy_print(matrix_product(H_1_2,down_down))
 
 #Definir los estados entrelazados en un espacio de 8 dimensiones
 up_up_up=kronecker(up_up,up)
@@ -260,35 +300,80 @@ fancy_print(matrix_product(H,down_down_up))
 print('octavo')
 fancy_print(matrix_product(H,down_down_down))
 
-##FIN PROBLEMA 4 #######################################################################################
+##FIN PROBLEMA 4 ############################################################################################
 
 #######################  PROBLEMA 6 #########################################################################
 
 
-A=matrix_product(sigma1z,sigma2z)
+#Producto de sigma1z y sigma2z
+productoria=matrix_product(sigma1z,sigma2z)
+
+#Ahora definimos los operadores a_j y a_Daga_j
+
+a_1= sigma1_menos
+a_2= matrix_product(sigma1z, sigma2_menos)
+a_3= matrix_product(productoria, sigma3_menos)
+
+a_Daga_1= sigma1_mas
+a_Daga_2= matrix_product(sigma1z, sigma2_mas)
+a_Daga_3= matrix_product(productoria,sigma3_mas)
+
+#Comprobamos que sigma1z y productoria son su propia inversa
+fancy_print(matrix_product(sigma1z,sigma1z))
+print('\t')
+fancy_print(matrix_product(productoria,productoria))
 
 
 
 
-sigma1_mas=scalar_product(0.5,matrix_sum(sigma1x,scalar_product(1j,sigma1y)))
-sigma2_mas=scalar_product(0.5,matrix_sum(sigma2x,scalar_product(1j,sigma2y)))
-sigma1_menos=scalar_product(0.5,matrix_sum(sigma1x,scalar_product(-1j,sigma1y)))
-sigma2_menos=scalar_product(0.5,matrix_sum(sigma2x,scalar_product(-1j,sigma2y)))
-sigma3_mas=scalar_product(0.5,matrix_sum(sigma3x,scalar_product(1j,sigma3y)))
-sigma3_menos=scalar_product(0.5,matrix_sum(sigma3x,scalar_product(-1j,sigma3y)))
+#Comprobamos que a_1(sigma1z) sea igual a a_1
+if matrix_product(a_1,sigma1z)==a_1:
+    print(True)
+else:
+    print(False)
+
+print('\t')
+
+#Comprobamos que (sigma1z)a_Daga_1 sea igual a a_Daga_1
+if matrix_product(sigma1z,a_Daga_1)==a_Daga_1:
+    print(True)
+else:
+    print(False)
+
+print('\t')
+
+#Comprobamos que a_2(sigma2z) sea igual a a_2
+if matrix_product(a_2,sigma2z)==a_2:
+    print(True)
+else:
+    print(False)
+
+print('\t')
+
+#Comprobamos que (sigma2z)a_Daga_2 sea igual a a_Daga_2
+if matrix_product(sigma2z,a_Daga_2)==a_Daga_2:
+    print(True)
+else:
+    print(False)
+
+print('\t')
+
+#Se define por partes las sumas de la nueva función 
+
+H1 = matrix_product(a_2,a_Daga_1)
+H2 = matrix_product(a_1,a_Daga_2)
+H3 = matrix_product(a_3,a_Daga_2)
+H4 = matrix_product(a_2,a_Daga_3)
+
+#El hamiltoniano en función de los nuevos operadores escalera.
+H_escalera=matrix_sum(matrix_sum(H1,H2),matrix_sum(H3,H4))
 
 
-
-#Definimos h_{n, n+1}
-h_1_2=matrix_sum(matrix_product(sigma1_mas,sigma2_menos),matrix_product(sigma2_mas, sigma1_menos))
-h_2_3=matrix_sum(matrix_product(sigma2_mas,sigma3_menos),matrix_product(sigma2_menos, sigma3_mas))
-
-
-#Comprobamos que 2(h_1_2+h_2_3) sea igual al Hamiltoniano
-if scalar_product(2,matrix_sum(h_1_2,h_2_3))==H:
+#Comprobamos que 2(H_escalera) sea igual al Hamiltoniano
+if scalar_product(2,H_escalera)==H:
     print(True)
 else:
     print(False)
 
 
-fancy_print(sigma2z)
+#### FIN PROBLEMA 6###########################################################################################
