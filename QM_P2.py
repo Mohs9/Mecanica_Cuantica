@@ -9,11 +9,6 @@ Entradas, Salidas, Resumen: Se hará un programa para calcular conmutadores. Mat
 
 
 
-'''
-A= sympy.Matrix(sigma2x)
-
-print(A.eigenvals())
-'''
 paulix=[[0,1],[1,0]]
 pauliy=[[0,-1j],[1j,0]]
 pauliz=[[1,0], [0,-1]]
